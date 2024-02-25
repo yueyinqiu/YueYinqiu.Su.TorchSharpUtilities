@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<PlatformTarget>x64</PlatformTarget>
+
+		<AssemblyName>YueYinqiu.Su.TorchSharpUtilities</AssemblyName>
+		<RootNamespace>$(AssemblyName)</RootNamespace>
+
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<PackageId>$(AssemblyName)</PackageId>
+		<Version>0.0.1</Version>
+		<Authors>yueyinqiu</Authors>
+		<RepositoryUrl>https://github.com/yueyinqiu/YueYinqiu.Su.TorchSharpUtilities.git</RepositoryUrl>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="TorchSharp" Version="0.101.6" />
+	</ItemGroup>
+
+</Project>
