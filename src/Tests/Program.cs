@@ -88,3 +88,14 @@ Configurations configurations;
     Console.WriteLine();
     Console.WriteLine();
 }
+
+{
+    Console.WriteLine("TEST 4:");
+
+    var modules = PythonLike.Range(10).Select(_ => torch.nn.Linear(10, 10));
+    var sequential = modules.ToSequential();
+    var moduleList = modules.ToModuleList();
+
+    Console.WriteLine(sequential.Count);
+    Console.WriteLine(moduleList.Count);
+}
