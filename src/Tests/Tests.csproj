@@ -16,4 +16,13 @@
 		<ProjectReference Include="..\TorchSharpUtilities\TorchSharpUtilities.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <None Update="wav1.wav">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="wav2.wav">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
 </Project>

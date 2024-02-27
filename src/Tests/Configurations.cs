@@ -6,12 +6,14 @@ using System.Threading.Tasks;
 using YueYinqiu.Su.TorchSharpUtilities;
 
 namespace Tests;
-internal class Configurations
+internal sealed record Configurations
 {
     public int Seed { get; set; } = 1234;
-    public string ModelPath { get; set; } =
+    public string OutputPath { get; set; } =
         PathBuilder.MyDocuments
-        .Join("MyMiscellaneousFiles")
+        .Join("MyTemporaryFiles")
         .Join("TorchSharpUtilitiesTests")
-        .Join("TestModel");
+        .Join("Outputs");
+    public string Wav1Path { get; set; } = "./wav1.wav";
+    public string Wav2Path { get; set; } = "./wav2.wav";
 }

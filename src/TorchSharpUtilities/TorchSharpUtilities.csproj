@@ -18,7 +18,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="TorchSharp" Version="0.101.6" />
+		<PackageReference Include="NAudio" Version="2.2.1" />
+		<PackageReference Include="TorchAudio" Version="0.101.6" />
+		<PackageReference Include="TorchSharp" Version="0.101.6" />
+		<PackageReference Include="TorchVision" Version="0.101.6" />
 	</ItemGroup>
 
 </Project>
