@@ -9,8 +9,6 @@ Configurations configurations;
 
 {
     Console.WriteLine("TEST 1:");
-    // ConfigurationLoader
-    // PathBuilder
     configurations = new ConfigurationLoader<Configurations>().LoadOrCreate();
     Console.WriteLine(configurations);
     Console.WriteLine();
@@ -19,10 +17,6 @@ Configurations configurations;
 
 {
     Console.WriteLine("TEST 2:");
-    // AudioFileReaderReadAsTensorExtensions
-    // DirectoryInfoCreatePathBuilderExtensions
-    // PathBuilder
-    // WaveFileWriterWriteTensorExtensions
     var output = Directory.CreateDirectory(configurations.OutputPath).CreatePathBuilder();
 
     using var reader1 = new AudioFileReader(configurations.Wav1Path);
@@ -60,3 +54,37 @@ Configurations configurations;
     Console.WriteLine();
 }
 
+{
+    Console.WriteLine("TEST 3:");
+
+    Console.WriteLine($"range(10): [{string.Join(", ", 
+        PythonLike.Range(10))}]");
+    Console.WriteLine($"range(0): [{string.Join(", ",
+        PythonLike.Range(0))}]");
+    Console.WriteLine($"range(-5): [{string.Join(", ",
+        PythonLike.Range(-5))}]");
+    Console.WriteLine();
+
+    Console.WriteLine($"range(0, 10): [{string.Join(", ",
+        PythonLike.Range(0, 10))}]");
+    Console.WriteLine($"range(-10, 0): [{string.Join(", ", 
+        PythonLike.Range(-10, 0))}]");
+    Console.WriteLine();
+
+    Console.WriteLine($"range(-10, 0, 1): [{string.Join(", ",
+        PythonLike.Range(-10, 0, 1))}]");
+    Console.WriteLine($"range(-10, 0, -1): [{string.Join(", ", 
+        PythonLike.Range(-10, 0, -1))}]");
+    Console.WriteLine();
+
+    Console.WriteLine($"range(0, -10, -1): [{string.Join(", ", 
+        PythonLike.Range(0, -10, -1))}]");
+    Console.WriteLine($"range(0, -10, 1): [{string.Join(", ", 
+        PythonLike.Range(0, -10, 1))}]");
+    Console.WriteLine();
+
+    Console.WriteLine($"range(1234567890, 1234567891): [{string.Join(", ",
+        PythonLike.Range(1234567891234567890, 1234567891234567891))}]");
+    Console.WriteLine();
+    Console.WriteLine();
+}
