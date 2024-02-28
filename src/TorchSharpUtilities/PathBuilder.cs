@@ -28,6 +28,16 @@ public sealed record PathBuilder(string Path)
             return new(System.IO.Path.GetFullPath(this.Path, basePath));
     }
 
+    public DirectoryInfo AsDirectory()
+    {
+        return new DirectoryInfo(this.Path);
+    }
+
+    public FileInfo AsFile()
+    {
+        return new FileInfo(this.Path);
+    }
+
     public override string ToString()
     {
         return this.Path;

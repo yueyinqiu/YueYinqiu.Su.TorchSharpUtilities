@@ -1,5 +1,4 @@
 ﻿using NAudio.Wave;
-using System.Text.Json;
 using Tests;
 using TorchSharp;
 using YueYinqiu.Su.TorchSharpUtilities;
@@ -57,7 +56,7 @@ Configurations configurations;
 {
     Console.WriteLine("TEST 3:");
 
-    Console.WriteLine($"range(10): [{string.Join(", ", 
+    Console.WriteLine($"range(10): [{string.Join(", ",
         PythonLike.Range(10))}]");
     Console.WriteLine($"range(0): [{string.Join(", ",
         PythonLike.Range(0))}]");
@@ -67,19 +66,19 @@ Configurations configurations;
 
     Console.WriteLine($"range(0, 10): [{string.Join(", ",
         PythonLike.Range(0, 10))}]");
-    Console.WriteLine($"range(-10, 0): [{string.Join(", ", 
+    Console.WriteLine($"range(-10, 0): [{string.Join(", ",
         PythonLike.Range(-10, 0))}]");
     Console.WriteLine();
 
     Console.WriteLine($"range(-10, 0, 1): [{string.Join(", ",
         PythonLike.Range(-10, 0, 1))}]");
-    Console.WriteLine($"range(-10, 0, -1): [{string.Join(", ", 
+    Console.WriteLine($"range(-10, 0, -1): [{string.Join(", ",
         PythonLike.Range(-10, 0, -1))}]");
     Console.WriteLine();
 
-    Console.WriteLine($"range(0, -10, -1): [{string.Join(", ", 
+    Console.WriteLine($"range(0, -10, -1): [{string.Join(", ",
         PythonLike.Range(0, -10, -1))}]");
-    Console.WriteLine($"range(0, -10, 1): [{string.Join(", ", 
+    Console.WriteLine($"range(0, -10, 1): [{string.Join(", ",
         PythonLike.Range(0, -10, 1))}]");
     Console.WriteLine();
 
@@ -98,4 +97,25 @@ Configurations configurations;
 
     Console.WriteLine(sequential.Count);
     Console.WriteLine(moduleList.Count);
+
+    var tensor = torch.rand([1, 10]);
+    tensor.Print(TensorStringStyle.Julia);
+    Console.WriteLine(sequential.call(tensor).ToCsharpString());
+
+    var outputDirectory = new PathBuilder(configurations.OutputPath).Join("no such dir");
+    outputDirectory.AsDirectory().Create();
+    outputDirectory.AsDirectory().Delete(true);
+
+    var modelFile = outputDirectory.Join("model");
+    sequential.SaveWithDirectory(modelFile);
+    var tensorDotnetFile = outputDirectory.Join("tensor dotnet");
+    tensor.SaveWithDirectory(tensorDotnetFile);
+    var tensorFile = outputDirectory.Join("tensor");
+    tensor.SaveWithDirectory(tensorFile, false);
+
+    var newSequential = modules.ToSequential();
+    _ = newSequential.load(modelFile.AsFile().FullName);
+    sequential.call(torch.load(tensorFile)).Print();
+    var k = torch.Tensor.Load(tensorDotnetFile);
+    sequential.call(k).Print();
 }
