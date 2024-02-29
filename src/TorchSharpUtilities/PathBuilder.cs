@@ -38,6 +38,11 @@ public sealed record PathBuilder(string Path)
         return new FileInfo(this.Path);
     }
 
+    public PathBuilder ChangeExtension(string? extension = null)
+    {
+        return new PathBuilder(System.IO.Path.ChangeExtension(this.Path, extension));
+    }
+
     public override string ToString()
     {
         return this.Path;

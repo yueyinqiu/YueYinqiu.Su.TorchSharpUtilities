@@ -1,4 +1,7 @@
 ﻿using NAudio.Wave;
+using System.Diagnostics;
+using System.Text.Json;
+using System.Xml.Linq;
 using Tests;
 using TorchSharp;
 using YueYinqiu.Su.TorchSharpUtilities;
@@ -99,23 +102,102 @@ Configurations configurations;
     Console.WriteLine(moduleList.Count);
 
     var tensor = torch.rand([1, 10]);
-    tensor.Print(TensorStringStyle.Julia);
-    Console.WriteLine(sequential.call(tensor).ToCsharpString());
+    _ = tensor.print();
+    Console.WriteLine(sequential.call(tensor).cstr());
 
     var outputDirectory = new PathBuilder(configurations.OutputPath).Join("no such dir");
     outputDirectory.AsDirectory().Create();
     outputDirectory.AsDirectory().Delete(true);
 
     var modelFile = outputDirectory.Join("model");
-    sequential.SaveWithDirectory(modelFile);
+    _ = sequential.SaveWithDirectory(modelFile);
     var tensorDotnetFile = outputDirectory.Join("tensor dotnet");
-    tensor.SaveWithDirectory(tensorDotnetFile);
+    _ = tensor.SaveWithDirectory(tensorDotnetFile);
     var tensorFile = outputDirectory.Join("tensor");
-    tensor.SaveWithDirectory(tensorFile, false);
+    _ = tensor.SaveWithDirectory(tensorFile, false);
 
     var newSequential = modules.ToSequential();
     _ = newSequential.load(modelFile.AsFile().FullName);
-    sequential.call(torch.load(tensorFile)).Print();
+    _ = sequential.call(torch.load(tensorFile)).print();
     var k = torch.Tensor.Load(tensorDotnetFile);
-    sequential.call(k).Print();
+    _ = sequential.call(k).print();
+    Console.WriteLine();
+    Console.WriteLine();
+}
+
+{
+    Console.WriteLine("TEST 5:");
+    var output = Directory.CreateDirectory(configurations.OutputPath).CreatePathBuilder();
+    output = output.Join("try.xlsx");
+    output = output.AsFile().CreatePathBuilder();
+    output = output.ChangeExtension("csv");
+
+    void CheckWritten()
+    {
+        Debug.Assert(output is not null);
+        using FileStream fs = new FileStream(output, 
+            FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+        using StreamReader reader = new StreamReader(fs);
+        Console.WriteLine($": {reader.ReadToEnd()}");
+    }
+
+    using var writer = new CsvWriter<Configurations>(output);
+    CheckWritten();
+
+    writer.Flush();
+    CheckWritten();
+
+    writer.Write(new Configurations());
+    CheckWritten();
+
+    writer.Flush();
+    CheckWritten();
+
+    writer.Write(new Configurations());
+    CheckWritten();
+
+    writer.Dispose();
+    CheckWritten();
+    Console.WriteLine();
+    Console.WriteLine();
+}
+
+{
+    Console.WriteLine("TEST 6:");
+
+    var tensor = torch.rand(10);
+    var arrayF = (float[])tensor.ToArray();
+    Console.WriteLine(string.Join(' ', arrayF));
+    Console.WriteLine();
+
+    tensor = torch.rand(4, 2, torch.ScalarType.Float64);
+    _ = tensor.print(style: TensorStringStyle.CSharp);
+    Console.WriteLine();
+
+    static void Print(double[,] array2d)
+    {
+        for (int i = 0; i < array2d.GetLength(0); i++)
+        {
+            for (int j = 0; j < array2d.GetLength(1); j++)
+            {
+                Console.Write(array2d[i, j]);
+                Console.Write(' ');
+            }
+            Console.WriteLine();
+        }
+    }
+
+    var d = new double[,] 
+    { 
+        { 0.032972, 0.31117 }, 
+        { 0.11957, 0.4697 }, 
+        { 0.49784, 0.4085 }, 
+        { 0.46683, 0.52656 }
+    };
+    Print(d);
+    Console.WriteLine();
+    var arrayD = (double[,])tensor.ToArray();
+    Print(d);
+    Console.WriteLine();
+    Console.WriteLine();
 }
