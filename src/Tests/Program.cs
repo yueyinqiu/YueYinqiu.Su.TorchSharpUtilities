@@ -170,34 +170,17 @@ Configurations configurations;
     Console.WriteLine(string.Join(' ', arrayF));
     Console.WriteLine();
 
-    tensor = torch.rand(4, 2, torch.ScalarType.Float64);
+    tensor = torch.rand(4, 2, torch.ScalarType.Float64) * 100;
     _ = tensor.print(style: TensorStringStyle.CSharp);
     Console.WriteLine();
 
-    static void Print(double[,] array2d)
+    var arrayD = (int[,])tensor.ToArray(typeof(int));
+    for (int i = 0; i < arrayD.GetLength(0); i++)
     {
-        for (int i = 0; i < array2d.GetLength(0); i++)
-        {
-            for (int j = 0; j < array2d.GetLength(1); j++)
-            {
-                Console.Write(array2d[i, j]);
-                Console.Write(' ');
-            }
-            Console.WriteLine();
-        }
+        for (int j = 0; j < arrayD.GetLength(1); j++)
+            Console.Write($"{arrayD[i, j]}({tensor[i, j].ToDouble()}) ");
+        Console.WriteLine();
     }
-
-    var d = new double[,] 
-    { 
-        { 0.032972, 0.31117 }, 
-        { 0.11957, 0.4697 }, 
-        { 0.49784, 0.4085 }, 
-        { 0.46683, 0.52656 }
-    };
-    Print(d);
-    Console.WriteLine();
-    var arrayD = (double[,])tensor.ToArray();
-    Print(d);
     Console.WriteLine();
     Console.WriteLine();
 }

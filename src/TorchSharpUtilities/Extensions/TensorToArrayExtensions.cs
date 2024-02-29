@@ -52,10 +52,11 @@ public static class TensorToArrayExtensions
                 "The given type is not expected.", nameof(csharpType));
     }
 
-    public static Array ToArray(this Tensor tensor)
+    public static Array ToArray(this Tensor tensor, Type? elementType = null)
     {
-        var csharpType = GetCsharpType(tensor.dtype);
-        var converter = GetConverter(csharpType);
+        if (elementType is null)
+            elementType = GetCsharpType(tensor.dtype);
+        var converter = GetConverter(elementType);
 
         var size = tensor.size();
         if (size.Length is 0)
@@ -63,9 +64,9 @@ public static class TensorToArrayExtensions
                 $"The given tensor is a scalar, which cannot be converted to an array.",
                 nameof(tensor));
 
-        var result = Array.CreateInstance(csharpType, size);
+        var result = Array.CreateInstance(elementType, size);
 
-        for (var indices = new long[size.Length]; ; )
+        for (var indices = new long[size.Length]; ;)
         {
             result.SetValue(converter(tensor[indices]), indices);
 
