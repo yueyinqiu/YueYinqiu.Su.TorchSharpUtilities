@@ -3,20 +3,8 @@ using TorchSharp;
 using static TorchSharp.torch;
 
 namespace YueYinqiu.Su.TorchSharpUtilities.Extensions;
-public static class TensorExtensions
+public static class TensorToArrayExtensions
 {
-    public static FileInfo SaveWithDirectory(
-        this Tensor tensor, string location, bool dotnetVersion = true)
-    {
-        var file = new FileInfo(location);
-        file.Directory?.Create();
-        if (dotnetVersion)
-            tensor.Save(location);
-        else
-            tensor.save(location);
-        return file;
-    }
-
     private static Type GetCsharpType(ScalarType scalarType)
     {
         return scalarType switch

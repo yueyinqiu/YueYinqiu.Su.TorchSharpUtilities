@@ -3,7 +3,7 @@ using System.Diagnostics;
 using TorchSharp;
 
 namespace YueYinqiu.Su.TorchSharpUtilities.Extensions;
-public static class WaveFileReadAndWriteExtensions
+public static class WavFileAccessExtensions
 {
     public static torch.Tensor ReadAsTensor(
         this AudioFileReader audio,

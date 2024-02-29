@@ -1,5 +1,5 @@
 ﻿namespace YueYinqiu.Su.TorchSharpUtilities.Extensions;
-public static class FileAndDirectoryCreatePathBuilderExtensions
+public static class PathBuilderCreateExtensions
 {
     public static PathBuilder CreatePathBuilder(this FileInfo file)
     {

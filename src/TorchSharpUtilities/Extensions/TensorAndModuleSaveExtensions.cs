@@ -3,7 +3,7 @@ using static TorchSharp.torch;
 using static TorchSharp.torch.nn;
 
 namespace YueYinqiu.Su.TorchSharpUtilities.Extensions;
-public static class ModuleAndTensorSaveExtensions
+public static class TensorAndModuleSaveExtensions
 {
     public static FileInfo SaveWithDirectory(
         this Tensor tensor, string location, bool dotnetVersion = true)
