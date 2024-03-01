@@ -13,7 +13,7 @@ public sealed class CsvWriter<T> : IDisposable
         this.writer.WriteHeader<T>();
         this.writer.NextRecord();
     }
-    
+
     public void Write(T value)
     {
         this.writer.WriteRecord(value);

@@ -1,7 +1,5 @@
 ﻿using NAudio.Wave;
 using System.Diagnostics;
-using System.Text.Json;
-using System.Xml.Linq;
 using Tests;
 using TorchSharp;
 using YueYinqiu.Su.TorchSharpUtilities;
@@ -121,6 +119,20 @@ Configurations configurations;
     _ = sequential.call(torch.load(tensorFile)).print();
     var k = torch.Tensor.Load(tensorDotnetFile);
     _ = sequential.call(k).print();
+
+    modelFile = outputDirectory.Join("model");
+    sequential.SaveWithDirectory(modelFile.AsFile());
+    tensorDotnetFile = outputDirectory.Join("tensor dotnet");
+    tensor.SaveWithDirectory(tensorDotnetFile.AsFile());
+    tensorFile = outputDirectory.Join("tensor");
+    tensor.SaveWithDirectory(tensorFile.AsFile(), false);
+
+    newSequential = modules.ToSequential();
+    _ = newSequential.load(modelFile.AsFile().FullName);
+    _ = sequential.call(torch.load(tensorFile)).print();
+    k = torch.Tensor.Load(tensorDotnetFile);
+    _ = sequential.call(k).print();
+
     Console.WriteLine();
     Console.WriteLine();
 }
@@ -135,7 +147,7 @@ Configurations configurations;
     void CheckWritten()
     {
         Debug.Assert(output is not null);
-        using FileStream fs = new FileStream(output, 
+        using FileStream fs = new FileStream(output,
             FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
         using StreamReader reader = new StreamReader(fs);
         Console.WriteLine($": {reader.ReadToEnd()}");
@@ -183,4 +195,22 @@ Configurations configurations;
     }
     Console.WriteLine();
     Console.WriteLine();
+}
+
+{
+    Console.WriteLine("TEST 7:");
+
+    var path = Directory.CreateDirectory(configurations.OutputPath).CreatePathBuilder();
+    path = path.Join("test.json");
+
+    HumanFriendlyJson.Serialize(path.AsFile(), "Hello World");
+    Console.WriteLine(HumanFriendlyJson.Deserialize<string>(path.AsFile()));
+
+    using var stream = new MemoryStream();
+    HumanFriendlyJson.Serialize(stream, "Hello World");
+    stream.Position = 0;
+    Console.WriteLine(HumanFriendlyJson.Deserialize<string>(stream));
+
+    var s = HumanFriendlyJson.Serialize("Hello World");
+    Console.WriteLine(HumanFriendlyJson.Deserialize<string>(s));
 }

@@ -1,5 +1,4 @@
-﻿using TorchSharp;
-using TorchSharp.Modules;
+﻿using TorchSharp.Modules;
 using static TorchSharp.torch.nn;
 
 namespace YueYinqiu.Su.TorchSharpUtilities.Extensions;
