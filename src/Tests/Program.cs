@@ -31,22 +31,29 @@ Configurations configurations;
     Console.WriteLine(audio2.ToString(TensorStringStyle.CSharp));
     Console.WriteLine();
 
-    using (var writer = new WaveFileWriter(output.Join("test1.wav"), new WaveFormat(16000, 1)))
+    using (var writer = new WaveFileWriter(output.Join("test1.wav"), new WaveFormat(48000, 1)))
     {
         writer.WriteTensor(audio1);
         writer.WriteTensor(audio2, false);
         Console.WriteLine($"The result has been written to {writer.Filename}");
     }
 
-    using (var writer = new WaveFileWriter(output.Join("test2.wav"), new WaveFormat(20000, 2)))
+    using (var writer = new WaveFileWriter(output.Join("test2.wav"), new WaveFormat(56000, 2)))
     {
-        var new2 = audio2.transpose(0, 1);
-        var new1 = audio1[..(int)new2.size(0), ..(int)new2.size(1)];
-        var newAudio = torch.concat([new1, new2], dim: 0);
+        var new2 = audio2.transpose(0, 1)[..(int)audio1.size(0), ..(int)audio1.size(1)];
+        var newAudio = torch.concat([audio1, new2], dim: 0);
         writer.WriteTensor(newAudio);
 
-        newAudio = torch.concat([new2, new1], dim: 0);
+        newAudio = torch.concat([new2, audio1], dim: 0);
         writer.WriteTensor(newAudio.transpose(0, 1), false);
+        Console.WriteLine($"The result has been written to {writer.Filename}");
+    }
+
+    using var reader3 = new AudioFileReader(output.Join("test2.wav"));
+    using (var writer = new WaveFileWriter(output.Join("test3.wav"), new WaveFormat(48000, 2)))
+    {
+        var audio3 = reader3.ReadAsTensor();
+        writer.WriteTensor(audio3.flip(0));
         Console.WriteLine($"The result has been written to {writer.Filename}");
     }
 

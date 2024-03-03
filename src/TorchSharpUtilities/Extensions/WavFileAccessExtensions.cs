@@ -10,43 +10,87 @@ public static class WavFileAccessExtensions
         bool channelsFirst = true,
         int bufferSize = 1024)
     {
-        const int bitsPerByte = 8;
-        Debug.Assert(audio.WaveFormat.BitsPerSample % bitsPerByte is 0);
-        var sampleSize = audio.WaveFormat.BitsPerSample / bitsPerByte;
-        Debug.Assert(sampleSize is not 0);
-
-        var totalChannel = audio.WaveFormat.Channels;
-        var totalFrame = audio.Length - audio.Position;
-        Debug.Assert(totalFrame % (sampleSize * totalChannel) is 0);
-        totalFrame = totalFrame / sampleSize / totalChannel;
-
-        var result = torch.empty(totalChannel, totalFrame, torch.ScalarType.Float32);
-        var buffer = new float[bufferSize * totalChannel];
-        for (var currentFrame = 0; ;)
         {
-            var read = audio.Read(buffer, 0, buffer.Length);
-            Debug.Assert(read % totalChannel == 0);
+            const int bitsPerByte = 8;
+            Debug.Assert(audio.WaveFormat.BitsPerSample % bitsPerByte is 0);
+            var sampleSize = audio.WaveFormat.BitsPerSample / bitsPerByte;
+            Debug.Assert(sampleSize is not 0);
 
-            for (int currentBufferItem = 0; currentBufferItem < read;)
+            var totalChannel = audio.WaveFormat.Channels;
+
+            var result = new List<float>();
+            var buffer = new float[bufferSize * totalChannel];
+            for (; ; )
             {
-                for (int currentChannel = 0; currentChannel < totalChannel;)
+                var read = audio.Read(buffer, 0, buffer.Length);
+                if (read < buffer.Length)
                 {
-                    result[currentChannel, currentFrame] = buffer[currentBufferItem];
-                    currentChannel++;
-                    currentBufferItem++;
+                    result.AddRange(buffer[..read]);
+                    break;
                 }
-                currentFrame++;
+                result.AddRange(buffer);
             }
-            if (read < buffer.Length)
-                break;
+
+            using var tensor = torch.tensor(result);
+            Debug.Assert(result.Count % audio.WaveFormat.Channels is 0);
+            var view = tensor.view(
+                result.Count / audio.WaveFormat.Channels,
+               audio.WaveFormat.Channels);
+
+            if (!channelsFirst)
+                return view;
+            else
+            {
+                var transpose = view.transpose(0, 1);
+                view.Dispose();
+                return transpose;
+            }
         }
-        if (channelsFirst)
-            return result;
-        else
+
+#warning Use the code below.
         {
-            var newResult = result.transpose(0, 1);
-            result.Dispose();
-            return newResult;
+            // The below version is supposed to work.
+            // However due to some problems inside NAudio, it cannot work on .flac files currently.
+            /*
+            const int bitsPerByte = 8;
+            Debug.Assert(audio.WaveFormat.BitsPerSample % bitsPerByte is 0);
+            var sampleSize = audio.WaveFormat.BitsPerSample / bitsPerByte;
+            Debug.Assert(sampleSize is not 0);
+
+            var totalChannel = audio.WaveFormat.Channels;
+            var totalFrame = audio.Length - audio.Position;
+            Debug.Assert(totalFrame % (sampleSize * totalChannel) is 0);
+            totalFrame = totalFrame / sampleSize / totalChannel;
+
+            var result = torch.empty(totalChannel, totalFrame, torch.ScalarType.Float32);
+            var buffer = new float[bufferSize * totalChannel];
+            for (var currentFrame = 0; ;)
+            {
+                var read = audio.Read(buffer, 0, buffer.Length);
+                Debug.Assert(read % totalChannel == 0);
+
+                for (int currentBufferItem = 0; currentBufferItem < read;)
+                {
+                    for (int currentChannel = 0; currentChannel < totalChannel;)
+                    {
+                        result[currentChannel, currentFrame] = buffer[currentBufferItem];
+                        currentChannel++;
+                        currentBufferItem++;
+                    }
+                    currentFrame++;
+                }
+                if (read < buffer.Length)
+                    break;
+            }
+            if (channelsFirst)
+                return result;
+            else
+            {
+                var newResult = result.transpose(0, 1);
+                result.Dispose();
+                return newResult;
+            }
+            */
         }
     }
 

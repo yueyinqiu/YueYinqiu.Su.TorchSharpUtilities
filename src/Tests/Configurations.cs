@@ -9,6 +9,6 @@ internal sealed record Configurations
         .Join("MyTemporaryFiles")
         .Join("TorchSharpUtilitiesTests")
         .Join("Outputs");
-    public string Wav1Path { get; set; } = "./wav1.wav";
-    public string Wav2Path { get; set; } = "./wav2.wav";
+    public string Wav1Path { get; set; } = "./wav1.flac";
+    public string Wav2Path { get; set; } = "./wav2.flac";
 }

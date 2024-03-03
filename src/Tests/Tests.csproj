@@ -17,10 +17,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Update="wav1.wav">
+	  <None Update="wav1.flac">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
-	  <None Update="wav2.wav">
+	  <None Update="wav2.flac">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
 	</ItemGroup>
