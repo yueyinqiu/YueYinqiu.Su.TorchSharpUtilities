@@ -2,8 +2,11 @@
 
 public sealed class ConfigurationLoader<T> where T : class, new()
 {
-    public ConfigurationLoader()
+    internal sealed record ConfigurationsWithVersion(string Version, T Configurations);
+
+    public ConfigurationLoader(string version)
     {
+        this.Version = version;
         this.File = new FileInfo("./configuration.json");
         this.Default = new T();
         this.LoadingMessage =
@@ -22,6 +25,7 @@ public sealed class ConfigurationLoader<T> where T : class, new()
         };
     }
 
+    public string Version { get; set; }
     public FileInfo File { get; set; }
     public T Default { get; set; }
     public string LoadingMessage { get; set; }
@@ -34,12 +38,14 @@ public sealed class ConfigurationLoader<T> where T : class, new()
 
         if (this.File.Exists)
         {
-            var result = HumanFriendlyJson.Deserialize<T>(this.File);
-            if (result is not null)
-                return result;
+            var result = HumanFriendlyJson.Deserialize<
+                ConfigurationsWithVersion>(this.File);
+            if (result?.Version == this.Version)
+                return result.Configurations;
         }
 
-        HumanFriendlyJson.Serialize(this.File, this.Default);
+        HumanFriendlyJson.Serialize<
+            ConfigurationsWithVersion>(this.File, new(this.Version, this.Default));
         Console.WriteLine(this.CreatingMessage);
 
         this.Terminator();
