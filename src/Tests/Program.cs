@@ -9,7 +9,7 @@ Configurations configurations;
 
 {
     Console.WriteLine("TEST 1:");
-    configurations = new ConfigurationLoader<Configurations>("hello world").LoadOrCreate();
+    configurations = new ConfigurationLoader<Configurations>().LoadOrCreate();
     Console.WriteLine(configurations);
     Console.WriteLine();
     Console.WriteLine();

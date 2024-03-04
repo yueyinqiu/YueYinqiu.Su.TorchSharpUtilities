@@ -1,12 +1,9 @@
 ﻿namespace YueYinqiu.Su.TorchSharpUtilities;
 
-public sealed class ConfigurationLoader<T> where T : class, new()
+public sealed class ConfigurationLoader<T> where T : IConfigurations, new()
 {
-    internal sealed record ConfigurationsWithVersion(string Version, T Configurations);
-
-    public ConfigurationLoader(string version)
+    public ConfigurationLoader()
     {
-        this.Version = version;
         this.File = new FileInfo("./configuration.json");
         this.Default = new T();
         this.LoadingMessage =
@@ -25,7 +22,6 @@ public sealed class ConfigurationLoader<T> where T : class, new()
         };
     }
 
-    public string Version { get; set; }
     public FileInfo File { get; set; }
     public T Default { get; set; }
     public string LoadingMessage { get; set; }
@@ -38,14 +34,12 @@ public sealed class ConfigurationLoader<T> where T : class, new()
 
         if (this.File.Exists)
         {
-            var result = HumanFriendlyJson.Deserialize<
-                ConfigurationsWithVersion>(this.File);
-            if (result?.Version == this.Version)
-                return result.Configurations;
+            var result = HumanFriendlyJson.Deserialize<T>(this.File);
+            if (result?.Version == this.Default.Version)
+                return result;
         }
 
-        HumanFriendlyJson.Serialize<
-            ConfigurationsWithVersion>(this.File, new(this.Version, this.Default));
+        HumanFriendlyJson.Serialize(this.File, this.Default);
         Console.WriteLine(this.CreatingMessage);
 
         this.Terminator();

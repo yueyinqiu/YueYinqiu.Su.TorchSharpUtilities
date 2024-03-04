@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace YueYinqiu.Su.TorchSharpUtilities;
 public static class HumanFriendlyJson
@@ -9,7 +10,8 @@ public static class HumanFriendlyJson
         WriteIndented = true,
         AllowTrailingCommas = true,
         PropertyNameCaseInsensitive = true,
-        ReadCommentHandling = JsonCommentHandling.Skip
+        ReadCommentHandling = JsonCommentHandling.Skip,
+        UnmappedMemberHandling = JsonUnmappedMemberHandling.Disallow
     };
 
     public static string Serialize<T>(T value)
