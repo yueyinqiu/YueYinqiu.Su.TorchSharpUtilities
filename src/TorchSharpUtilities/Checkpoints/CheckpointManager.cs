@@ -1,4 +1,6 @@
-﻿using YueYinqiu.Su.TorchSharpUtilities.Extensions;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
+using YueYinqiu.Su.TorchSharpUtilities.Extensions;
 
 namespace YueYinqiu.Su.TorchSharpUtilities.Checkpoints;
 public sealed class CheckpointManager<T> where T : ICheckpoint<T>
@@ -43,14 +45,19 @@ public sealed class CheckpointManager<T> where T : ICheckpoint<T>
         }
     }
 
-    public T Load(int? index)
+    public T Load(int index)
     {
-        if (index.HasValue)
-        {
-            var file = this.GetFile(index.Value);
-            return T.Load(file);
-        }
-        return this.ListAll().MaxBy(x => x.index).checkpoint.Value;
+        var file = this.GetFile(index);
+        return T.Load(file);
+    }
+
+    public (int index, T checkpoint)? Load()
+    {
+        var all = this.ListAll();
+        if (!all.Any())
+            return null;
+        var (index, checkpoint) = this.ListAll().MaxBy(x => x.index);
+        return (index, checkpoint.Value);
     }
 
     public void Save(int index, T checkpoint)

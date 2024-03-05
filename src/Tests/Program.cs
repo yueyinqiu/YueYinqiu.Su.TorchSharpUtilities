@@ -254,7 +254,7 @@ Configurations configurations;
     checkpointManager.Save(1234, new TensorCheckpoint(torch.zeros(3, 3) + 1234));
     checkpointManager.Save(2345, new TensorCheckpoint(torch.zeros(3, 3) + 2345));
     checkpointManager.Save(0123, new TensorCheckpoint(torch.zeros(3, 3) + 0123));
-    Console.WriteLine(checkpointManager.Load(null));
+    Console.WriteLine(checkpointManager.Load());
     Console.WriteLine(checkpointManager.Load(1234));
 
     foreach (var checkpoint in checkpointManager.ListAll())

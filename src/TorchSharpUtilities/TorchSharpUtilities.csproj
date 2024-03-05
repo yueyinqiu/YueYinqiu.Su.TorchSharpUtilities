@@ -11,7 +11,7 @@
 
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<PackageId>$(AssemblyName)</PackageId>
-		<Version>0.0.15</Version>
+		<Version>0.0.16</Version>
 		<Authors>yueyinqiu</Authors>
 		<RepositoryUrl>https://github.com/yueyinqiu/YueYinqiu.Su.TorchSharpUtilities.git</RepositoryUrl>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
