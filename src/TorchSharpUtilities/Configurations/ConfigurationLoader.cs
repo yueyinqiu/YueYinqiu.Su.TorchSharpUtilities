@@ -4,18 +4,18 @@ public sealed class ConfigurationLoader<T> where T : IConfigurations, new()
 {
     public ConfigurationLoader()
     {
-        File = new FileInfo("./configuration.json");
-        Default = new T();
-        LoadingMessage =
+        this.File = new FileInfo("./configuration.json");
+        this.Default = new T();
+        this.LoadingMessage =
             $"Loading configurations...{Console.Out.NewLine}";
-        CreatingMessage =
+        this.CreatingMessage =
             $"Cannot find the configuration file. " +
             $"This is not an error, " +
             $"and now the default one has been created.{Console.Out.NewLine}" +
             $"Please edit it as needed, " +
             $"and then restart the application: " +
-            $"{File.FullName}";
-        Terminator = () =>
+            $"{this.File.FullName}";
+        this.Terminator = () =>
         {
             Console.Out.Flush();
             Environment.Exit(0);
@@ -30,19 +30,19 @@ public sealed class ConfigurationLoader<T> where T : IConfigurations, new()
 
     public T LoadOrCreate()
     {
-        Console.WriteLine(LoadingMessage);
+        Console.WriteLine(this.LoadingMessage);
 
-        if (File.Exists)
+        if (this.File.Exists)
         {
-            var result = HumanFriendlyJson.Deserialize<T>(File);
-            if (result?.Version == Default.Version)
+            var result = HumanFriendlyJson.Deserialize<T>(this.File);
+            if (result?.Version == this.Default.Version)
                 return result;
         }
 
-        HumanFriendlyJson.Serialize(File, Default);
-        Console.WriteLine(CreatingMessage);
+        HumanFriendlyJson.Serialize(this.File, this.Default);
+        Console.WriteLine(this.CreatingMessage);
 
-        Terminator();
-        throw new Exception(CreatingMessage);
+        this.Terminator();
+        throw new Exception(this.CreatingMessage);
     }
 }

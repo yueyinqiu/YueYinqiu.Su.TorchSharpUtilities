@@ -4,7 +4,7 @@ namespace YueYinqiu.Su.TorchSharpUtilities.Checkpoints;
 public sealed class CheckpointManager<T> where T : ICheckpoint<T>
 {
     private readonly PathBuilder directory;
-    public DirectoryInfo Directory => directory.AsDirectory();
+    public DirectoryInfo Directory => this.directory.AsDirectory();
     public string Prefix { get; }
     public string Suffix { get; }
 
@@ -15,16 +15,16 @@ public sealed class CheckpointManager<T> where T : ICheckpoint<T>
     {
         directory.Create();
         this.directory = directory.CreatePathBuilder();
-        Prefix = prefix;
-        Suffix = suffix;
+        this.Prefix = prefix;
+        this.Suffix = suffix;
 
         // check prefix and suffix
-        _ = GetFile(0);
+        _ = this.GetFile(0);
     }
 
     private FileInfo GetFile(int index)
     {
-        var builder = directory.Join($"{Prefix}{index}{Suffix}");
+        var builder = this.directory.Join($"{this.Prefix}{index}{this.Suffix}");
         return builder.AsFile();
     }
 
@@ -35,9 +35,9 @@ public sealed class CheckpointManager<T> where T : ICheckpoint<T>
 
     public IEnumerable<(int index, IWrapped<T> checkpoint)> ListAll()
     {
-        foreach (var file in Directory.EnumerateFiles($"{Prefix}*{Suffix}"))
+        foreach (var file in this.Directory.EnumerateFiles($"{this.Prefix}*{this.Suffix}"))
         {
-            var indexString = file.Name[Prefix.Length..^Suffix.Length];
+            var indexString = file.Name[this.Prefix.Length..^this.Suffix.Length];
             if (int.TryParse(indexString, out var index))
                 yield return (index, new WrappedCheckpoint(file));
         }
@@ -47,15 +47,15 @@ public sealed class CheckpointManager<T> where T : ICheckpoint<T>
     {
         if (index.HasValue)
         {
-            var file = GetFile(index.Value);
+            var file = this.GetFile(index.Value);
             return T.Load(file);
         }
-        return ListAll().MaxBy(x => x.index).checkpoint.Value;
+        return this.ListAll().MaxBy(x => x.index).checkpoint.Value;
     }
 
     public void Save(int index, T checkpoint)
     {
-        var file = GetFile(index);
+        var file = this.GetFile(index);
         checkpoint.Save(file);
     }
 }

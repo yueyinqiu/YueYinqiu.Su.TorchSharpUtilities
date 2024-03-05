@@ -244,7 +244,7 @@ Configurations configurations;
     Console.WriteLine(checkpointManager.Load(null));
     Console.WriteLine(checkpointManager.Load(1234));
 
-    foreach(var checkpoint in checkpointManager.ListAll())
+    foreach (var checkpoint in checkpointManager.ListAll())
     {
         Console.WriteLine(checkpoint.index);
         Console.WriteLine(checkpoint.checkpoint.Value);
