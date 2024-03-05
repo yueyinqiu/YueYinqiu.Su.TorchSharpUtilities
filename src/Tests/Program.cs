@@ -1,8 +1,11 @@
 ﻿using NAudio.Wave;
 using System.Diagnostics;
 using Tests;
+using Tests.Extensions;
 using TorchSharp;
 using YueYinqiu.Su.TorchSharpUtilities;
+using YueYinqiu.Su.TorchSharpUtilities.Checkpoints;
+using YueYinqiu.Su.TorchSharpUtilities.Configurations;
 using YueYinqiu.Su.TorchSharpUtilities.Extensions;
 
 Configurations configurations;
@@ -18,6 +21,8 @@ Configurations configurations;
 {
     Console.WriteLine("TEST 2:");
     var output = Directory.CreateDirectory(configurations.OutputPath).CreatePathBuilder();
+    output /= "TEST 2";
+    output.AsDirectory().Create();
 
     using var reader1 = new AudioFileReader(configurations.Wav1Path);
     var audio1 = reader1.ReadAsTensor();
@@ -110,9 +115,8 @@ Configurations configurations;
     _ = tensor.print();
     Console.WriteLine(sequential.call(tensor).cstr());
 
-    var outputDirectory = new PathBuilder(configurations.OutputPath).Join("no such dir");
-    outputDirectory.AsDirectory().Create();
-    outputDirectory.AsDirectory().Delete(true);
+    var outputDirectory = configurations.OutputPath / new PathBuilder("TEST 4");
+    _ = outputDirectory.AsDirectory().Deleted();
 
     var modelFile = outputDirectory.Join("model");
     _ = sequential.SaveWithDirectory(modelFile);
@@ -147,7 +151,7 @@ Configurations configurations;
 {
     Console.WriteLine("TEST 5:");
     var output = Directory.CreateDirectory(configurations.OutputPath).CreatePathBuilder();
-    output = output.Join("try.xlsx");
+    output = output.Join("TEST 5").Join("try.xlsx");
     output = output.AsFile().CreatePathBuilder();
     output = output.ChangeExtension("csv");
 
@@ -160,7 +164,8 @@ Configurations configurations;
         Console.WriteLine($": {reader.ReadToEnd()}");
     }
 
-    using var writer = new CsvWriter<Configurations>(output);
+    output.AsFile().DeleteDirectory();
+    using var writer = new CsvWriter<Configurations>(output.AsFile());
     CheckWritten();
 
     writer.Flush();
@@ -208,7 +213,7 @@ Configurations configurations;
     Console.WriteLine("TEST 7:");
 
     var path = Directory.CreateDirectory(configurations.OutputPath).CreatePathBuilder();
-    path = path.Join("test.json");
+    path = path.Join("TEST 7").Join("test.json");
 
     HumanFriendlyJson.Serialize(path.AsFile(), "Hello World");
     Console.WriteLine(HumanFriendlyJson.Deserialize<string>(path.AsFile()));
@@ -220,4 +225,30 @@ Configurations configurations;
 
     var s = HumanFriendlyJson.Serialize("Hello World");
     Console.WriteLine(HumanFriendlyJson.Deserialize<string>(s));
+    Console.WriteLine();
+    Console.WriteLine();
+}
+
+{
+    Console.WriteLine("TEST 8:");
+
+    var path = Directory.CreateDirectory(configurations.OutputPath).CreatePathBuilder();
+    var directory = path.Join("TEST 8").AsDirectory().Deleted();
+
+    var checkpointManager = new CheckpointManager<TensorCheckpoint>(directory);
+    Console.WriteLine(checkpointManager.ListAll().Count());
+
+    checkpointManager.Save(1234, new TensorCheckpoint(torch.zeros(3, 3) + 1234));
+    checkpointManager.Save(2345, new TensorCheckpoint(torch.zeros(3, 3) + 2345));
+    checkpointManager.Save(0123, new TensorCheckpoint(torch.zeros(3, 3) + 0123));
+    Console.WriteLine(checkpointManager.Load(null));
+    Console.WriteLine(checkpointManager.Load(1234));
+
+    foreach(var checkpoint in checkpointManager.ListAll())
+    {
+        Console.WriteLine(checkpoint.index);
+        Console.WriteLine(checkpoint.checkpoint.Value);
+    }
+    Console.WriteLine();
+    Console.WriteLine();
 }

@@ -5,9 +5,10 @@ namespace YueYinqiu.Su.TorchSharpUtilities;
 public sealed class CsvWriter<T> : IDisposable
 {
     private readonly CsvHelper.CsvWriter writer;
-    public CsvWriter(string path)
+    public CsvWriter(FileInfo file)
     {
-        var streamWriter = new StreamWriter(path, false);
+        file.Directory?.Create();
+        var streamWriter = new StreamWriter(file.FullName, false);
         this.writer = new CsvHelper.CsvWriter(streamWriter, CultureInfo.InvariantCulture);
 
         this.writer.WriteHeader<T>();

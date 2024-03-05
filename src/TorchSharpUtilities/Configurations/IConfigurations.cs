@@ -1,4 +1,4 @@
-﻿namespace YueYinqiu.Su.TorchSharpUtilities;
+﻿namespace YueYinqiu.Su.TorchSharpUtilities.Configurations;
 
 public interface IConfigurations
 {
