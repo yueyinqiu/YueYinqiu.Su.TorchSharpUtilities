@@ -46,4 +46,9 @@ public static class HumanFriendlyJson
         using var utf8Json = utf8JsonFile.OpenRead();
         return JsonSerializer.Deserialize<T>(utf8Json, SerializerOptions);
     }
+
+    public static T? Clone<T>(T t)
+    {
+        return Deserialize<T>(Serialize(t));
+    }
 }

@@ -234,6 +234,10 @@ Configurations configurations;
     module = torch.nn.Linear(3, 3);
     _ = module.load_state_dict(states);
     Console.WriteLine(module.bias?.cstr());
+
+    var checkpoint = new TensorCheckpoint(torch.ones(3, 3) * 1234);
+    checkpoint = HumanFriendlyJson.Clone(checkpoint);
+    Console.WriteLine(checkpoint);
     Console.WriteLine();
     Console.WriteLine();
 }
