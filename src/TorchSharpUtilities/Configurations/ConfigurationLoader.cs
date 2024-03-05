@@ -1,4 +1,6 @@
-﻿namespace YueYinqiu.Su.TorchSharpUtilities.Configurations;
+﻿using YueYinqiu.Su.TorchSharpUtilities.JsonSerialization;
+
+namespace YueYinqiu.Su.TorchSharpUtilities.Configurations;
 
 public sealed class ConfigurationLoader<T> where T : IConfigurations, new()
 {

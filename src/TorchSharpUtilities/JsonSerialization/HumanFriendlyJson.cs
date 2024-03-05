@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace YueYinqiu.Su.TorchSharpUtilities;
+namespace YueYinqiu.Su.TorchSharpUtilities.JsonSerialization;
 public static class HumanFriendlyJson
 {
     public static JsonSerializerOptions SerializerOptions { get; } = new JsonSerializerOptions()
@@ -14,7 +14,8 @@ public static class HumanFriendlyJson
         UnmappedMemberHandling = JsonUnmappedMemberHandling.Disallow,
         Converters =
         {
-            new JsonStringEnumConverter()
+            new JsonStringEnumConverter(),
+            new TensorConverter()
         }
     };
 

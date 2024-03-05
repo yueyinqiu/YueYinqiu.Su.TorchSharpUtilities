@@ -1,5 +1,6 @@
 ﻿using NAudio.Wave;
 using System.Diagnostics;
+using System.Reflection;
 using Tests;
 using Tests.Extensions;
 using TorchSharp;
@@ -7,6 +8,7 @@ using YueYinqiu.Su.TorchSharpUtilities;
 using YueYinqiu.Su.TorchSharpUtilities.Checkpoints;
 using YueYinqiu.Su.TorchSharpUtilities.Configurations;
 using YueYinqiu.Su.TorchSharpUtilities.Extensions;
+using YueYinqiu.Su.TorchSharpUtilities.JsonSerialization;
 
 Configurations configurations;
 
@@ -14,6 +16,7 @@ Configurations configurations;
     Console.WriteLine("TEST 1:");
     configurations = new ConfigurationLoader<Configurations>().LoadOrCreate();
     Console.WriteLine(configurations);
+    _ = Directory.CreateDirectory(configurations.OutputPath).Deleted();
     Console.WriteLine();
     Console.WriteLine();
 }
@@ -219,12 +222,18 @@ Configurations configurations;
     Console.WriteLine(HumanFriendlyJson.Deserialize<string>(path.AsFile()));
 
     using var stream = new MemoryStream();
-    HumanFriendlyJson.Serialize(stream, "Hello World");
+    HumanFriendlyJson.Serialize(stream, torch.zeros(3, 3));
     stream.Position = 0;
-    Console.WriteLine(HumanFriendlyJson.Deserialize<string>(stream));
+    Console.WriteLine(HumanFriendlyJson.Deserialize<torch.Tensor>(stream));
 
-    var s = HumanFriendlyJson.Serialize("Hello World");
-    Console.WriteLine(HumanFriendlyJson.Deserialize<string>(s));
+    var module = torch.nn.Linear(3, 3);
+    Debug.Assert(module.bias is not null);
+    module.bias = torch.nn.Parameter(torch.ones_like(module.bias) * 1234);
+    var s = HumanFriendlyJson.Serialize(module.state_dict());
+    var states = HumanFriendlyJson.Deserialize<Dictionary<string, torch.Tensor>>(s);
+    module = torch.nn.Linear(3, 3);
+    _ = module.load_state_dict(states);
+    Console.WriteLine(module.bias?.cstr());
     Console.WriteLine();
     Console.WriteLine();
 }
