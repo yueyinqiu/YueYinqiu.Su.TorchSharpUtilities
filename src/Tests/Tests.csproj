@@ -9,7 +9,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="libtorch-cpu" Version="2.2.1.1" />
+		<PackageReference Include="TorchSharp-cpu" Version="0.102.1" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -17,12 +17,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Update="wav1.flac">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
-	  <None Update="wav2.flac">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
+		<None Update="wav1.flac">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="wav2.flac">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 	</ItemGroup>
 
 </Project>
