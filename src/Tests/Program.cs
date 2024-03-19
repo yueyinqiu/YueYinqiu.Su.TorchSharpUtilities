@@ -1,5 +1,8 @@
 ﻿using NAudio.Wave;
+using Python.Runtime;
 using System.Diagnostics;
+using System.IO.Compression;
+using System.Runtime.InteropServices;
 using Tests;
 using Tests.Extensions;
 using TorchSharp;
@@ -22,54 +25,6 @@ Configurations configurations;
 
 {
     Console.WriteLine("TEST 2:");
-    var output = Directory.CreateDirectory(configurations.OutputPath).CreatePathBuilder();
-    output /= "TEST 2";
-    output.AsDirectory().Create();
-
-    using var reader1 = new AudioFileReader(configurations.Wav1Path);
-    var audio1 = reader1.ReadAsTensor();
-    Console.WriteLine(reader1.WaveFormat);
-    Console.WriteLine(audio1.ToString(TensorStringStyle.CSharp));
-    Console.WriteLine();
-
-    using var reader2 = new AudioFileReader(configurations.Wav2Path);
-    var audio2 = reader2.ReadAsTensor(false);
-    Console.WriteLine(reader2.WaveFormat);
-    Console.WriteLine(audio2.ToString(TensorStringStyle.CSharp));
-    Console.WriteLine();
-
-    using (var writer = new WaveFileWriter(output.Join("test1.wav"), new WaveFormat(48000, 1)))
-    {
-        writer.WriteTensor(audio1);
-        writer.WriteTensor(audio2, false);
-        Console.WriteLine($"The result has been written to {writer.Filename}");
-    }
-
-    using (var writer = new WaveFileWriter(output.Join("test2.wav"), new WaveFormat(56000, 2)))
-    {
-        var new2 = audio2.transpose(0, 1)[..(int)audio1.size(0), ..(int)audio1.size(1)];
-        var newAudio = torch.concat([audio1, new2], dim: 0);
-        writer.WriteTensor(newAudio);
-
-        newAudio = torch.concat([new2, audio1], dim: 0);
-        writer.WriteTensor(newAudio.transpose(0, 1), false);
-        Console.WriteLine($"The result has been written to {writer.Filename}");
-    }
-
-    using var reader3 = new AudioFileReader(output.Join("test2.wav"));
-    using (var writer = new WaveFileWriter(output.Join("test3.wav"), new WaveFormat(48000, 2)))
-    {
-        var audio3 = reader3.ReadAsTensor();
-        writer.WriteTensor(audio3.flip(0));
-        Console.WriteLine($"The result has been written to {writer.Filename}");
-    }
-
-    Console.WriteLine();
-    Console.WriteLine();
-}
-
-{
-    Console.WriteLine("TEST 3:");
 
     Console.WriteLine($"range(10): [{string.Join(", ",
         PythonLike.Range(10))}]");
@@ -104,7 +59,7 @@ Configurations configurations;
 }
 
 {
-    Console.WriteLine("TEST 4:");
+    Console.WriteLine("TEST 3:");
 
     var modules = PythonLike.Range(10).Select(_ => torch.nn.Linear(10, 10));
     var sequential = modules.ToSequential();
@@ -151,9 +106,9 @@ Configurations configurations;
 }
 
 {
-    Console.WriteLine("TEST 5:");
+    Console.WriteLine("TEST 4:");
     var output = Directory.CreateDirectory(configurations.OutputPath).CreatePathBuilder();
-    output = output.Join("TEST 5").Join("try.xlsx");
+    output = output.Join("TEST 4").Join("try.xlsx");
     output = output.AsFile().CreatePathBuilder();
     output = output.ChangeExtension("csv");
 
@@ -189,7 +144,7 @@ Configurations configurations;
 }
 
 {
-    Console.WriteLine("TEST 6:");
+    Console.WriteLine("TEST 5:");
 
     var tensor = torch.rand(10);
     var arrayF = (float[])tensor.ToArray();
@@ -212,10 +167,10 @@ Configurations configurations;
 }
 
 {
-    Console.WriteLine("TEST 7:");
+    Console.WriteLine("TEST 6:");
 
     var path = Directory.CreateDirectory(configurations.OutputPath).CreatePathBuilder();
-    path = path.Join("TEST 7").Join("test.json");
+    path = path.Join("TEST 6").Join("test.json");
 
     HumanFriendlyJson.Serialize(path.AsFile(), "Hello World");
     Console.WriteLine(HumanFriendlyJson.Deserialize<string>(path.AsFile()));
@@ -242,10 +197,10 @@ Configurations configurations;
 }
 
 {
-    Console.WriteLine("TEST 8:");
+    Console.WriteLine("TEST 7:");
 
     var path = Directory.CreateDirectory(configurations.OutputPath).CreatePathBuilder();
-    var directory = path.Join("TEST 8").AsDirectory().Deleted();
+    var directory = path.Join("TEST 7").AsDirectory().Deleted();
 
     var checkpointManager = new CheckpointManager<TensorCheckpoint>(directory);
     Console.WriteLine(checkpointManager.ListAll().Count());
@@ -261,6 +216,99 @@ Configurations configurations;
         Console.WriteLine(checkpoint.index);
         Console.WriteLine(checkpoint.checkpoint.Value);
     }
+    Console.WriteLine();
+    Console.WriteLine();
+}
+
+{
+    Console.WriteLine("TEST 1':");
+    var output = Directory.CreateDirectory(configurations.OutputPath).CreatePathBuilder();
+    output /= "TEST 1'";
+    output.AsDirectory().Create();
+
+    using var reader1 = new AudioFileReader(configurations.Wav1Path);
+    var audio1 = reader1.ReadAsTensor();
+    Console.WriteLine(reader1.WaveFormat);
+    Console.WriteLine(audio1.ToString(TensorStringStyle.CSharp));
+    Console.WriteLine();
+
+    using var reader2 = new AudioFileReader(configurations.Wav2Path);
+    var audio2 = reader2.ReadAsTensor(false);
+    Console.WriteLine(reader2.WaveFormat);
+    Console.WriteLine(audio2.ToString(TensorStringStyle.CSharp));
+    Console.WriteLine();
+
+    using (var writer = new WaveFileWriter(output.Join("test1.wav"), new WaveFormat(48000, 1)))
+    {
+        writer.WriteTensor(audio1);
+        writer.WriteTensor(audio2, false);
+        Console.WriteLine($"The result has been written to {writer.Filename}");
+    }
+
+    using (var writer = new WaveFileWriter(output.Join("test2.wav"), new WaveFormat(56000, 2)))
+    {
+        var new2 = audio2.transpose(0, 1)[..(int)audio1.size(0), ..(int)audio1.size(1)];
+        var newAudio = torch.concat([audio1, new2], dim: 0);
+        writer.WriteTensor(newAudio);
+
+        newAudio = torch.concat([new2, audio1], dim: 0);
+        writer.WriteTensor(newAudio.transpose(0, 1), false);
+        Console.WriteLine($"The result has been written to {writer.Filename}");
+    }
+
+    using var reader3 = new AudioFileReader(output.Join("test2.wav"));
+    using (var writer = new WaveFileWriter(output.Join("test3.wav"), new WaveFormat(48000, 2)))
+    {
+        var audio3 = reader3.ReadAsTensor();
+        writer.WriteTensor(audio3.flip(0));
+        Console.WriteLine($"The result has been written to {writer.Filename}");
+    }
+
+    Console.WriteLine();
+    Console.WriteLine();
+}
+
+{
+    Console.WriteLine("TEST 2':");
+
+    if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+    {
+        Console.WriteLine("Skipped.");
+    }
+    else
+    {
+        var path = Directory.CreateDirectory(configurations.OutputPath).CreatePathBuilder();
+        var directory = path.Join("TEST 2'").AsDirectory().Deleted();
+
+        using var pythonZipStream = File.OpenRead(configurations.PythonPath);
+        using var zip = new ZipArchive(pythonZipStream);
+        zip.ExtractToDirectory(directory.FullName);
+
+        var python = new EmbeddablePython(directory);
+        for (int i = 0; i < 5; i++)
+        {
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            await python.EnsurePipAsync();
+            stopwatch.Stop();
+            Console.WriteLine(stopwatch.ElapsedMilliseconds);
+        }
+        await python.PipInstallAsync("electrostaticvacuum");
+        await python.PipInstallAsync("numpy==1.26.3");
+
+        python.InitializePythonNet();
+        dynamic sys = Py.Import("sys");
+        Console.WriteLine(sys.version);
+        dynamic electrostaticvacuum = Py.Import("electrostaticvacuum");
+        Console.WriteLine(electrostaticvacuum.__all__);
+        dynamic numpy = Py.Import("numpy");
+        Console.WriteLine(numpy.__version__);
+
+        AppContext.SetSwitch("System.Runtime.Serialization.EnableUnsafeBinaryFormatterSerialization", true);
+        PythonEngine.Shutdown();
+        AppContext.SetSwitch("System.Runtime.Serialization.EnableUnsafeBinaryFormatterSerialization", false);
+    }
+
     Console.WriteLine();
     Console.WriteLine();
 }

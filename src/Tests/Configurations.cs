@@ -13,4 +13,5 @@ internal sealed record Configurations : IConfigurations
     public DayOfWeek ItIs { get; set; } = DayOfWeek.Sunday;
     public string Wav1Path { get; set; } = new PathBuilder("./wav1.flac").Full();
     public string Wav2Path { get; set; } = "./wav2.flac";
+    public string PythonPath { get; set; } = "./python-3.12.2-embed-amd64.zip";
 }
