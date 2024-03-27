@@ -50,9 +50,6 @@ public sealed record EmbeddablePython(DirectoryInfo Directory)
 
             if (process.ExitCode is not 0)
                 throw new ProcessFailedException($"Failed to install pip.", process);
-
-            foreach (var pth in this.Directory.EnumerateFiles("*._pth"))
-                pth.Delete();
         }
     }
 

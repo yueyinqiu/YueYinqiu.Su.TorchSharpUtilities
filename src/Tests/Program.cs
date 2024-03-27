@@ -283,6 +283,8 @@ Configurations configurations;
         using var pythonZipStream = File.OpenRead(configurations.PythonPath);
         using var zip = new ZipArchive(pythonZipStream);
         zip.ExtractToDirectory(directory.FullName);
+        foreach (var pth in directory.EnumerateFiles("*._pth"))
+            pth.Delete();
 
         var python = new EmbeddablePython(directory);
         for (int i = 0; i < 5; i++)
