@@ -76,8 +76,11 @@ public sealed record EmbeddablePython(DirectoryInfo Directory)
             throw new ProcessFailedException($"Failed to install package '{package}'.", process);
     }
 
-    public void InitializePythonNet()
+    public bool InitializePythonNet()
     {
+        if (PythonEngine.IsInitialized)
+            return false;
+
         const string prefix = "python3";
         foreach (var file in this.Directory.EnumerateFiles($"{prefix}*"))
         {
@@ -90,6 +93,8 @@ public sealed record EmbeddablePython(DirectoryInfo Directory)
             Runtime.PythonDLL = file.FullName;
             break;
         }
+
         PythonEngine.Initialize();
+        return true;
     }
 }

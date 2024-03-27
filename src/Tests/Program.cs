@@ -296,7 +296,8 @@ Configurations configurations;
         await python.PipInstallAsync("electrostaticvacuum");
         await python.PipInstallAsync("numpy==1.26.3");
 
-        python.InitializePythonNet();
+        Console.WriteLine(python.InitializePythonNet());
+        Console.WriteLine(python.InitializePythonNet());
         dynamic sys = Py.Import("sys");
         Console.WriteLine(sys.version);
         dynamic electrostaticvacuum = Py.Import("electrostaticvacuum");
