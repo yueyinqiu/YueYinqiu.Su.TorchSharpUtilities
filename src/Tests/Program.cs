@@ -307,9 +307,7 @@ Configurations configurations;
         dynamic numpy = Py.Import("numpy");
         Console.WriteLine(numpy.__version__);
 
-        AppContext.SetSwitch("System.Runtime.Serialization.EnableUnsafeBinaryFormatterSerialization", true);
         PythonEngine.Shutdown();
-        AppContext.SetSwitch("System.Runtime.Serialization.EnableUnsafeBinaryFormatterSerialization", false);
     }
 
     Console.WriteLine();

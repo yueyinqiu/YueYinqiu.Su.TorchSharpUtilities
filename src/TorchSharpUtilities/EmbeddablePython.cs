@@ -1,5 +1,6 @@
 ﻿using Python.Runtime;
 using System.Diagnostics;
+using System.Runtime.Serialization;
 
 namespace YueYinqiu.Su.TorchSharpUtilities;
 
@@ -91,7 +92,21 @@ public sealed record EmbeddablePython(DirectoryInfo Directory)
             break;
         }
 
+        RuntimeData.FormatterType = typeof(DoNothingFormatter);
         PythonEngine.Initialize();
         return true;
     }
+
+#pragma warning disable SYSLIB0011
+#pragma warning disable SYSLIB0050
+    class DoNothingFormatter : IFormatter
+    {
+        public SerializationBinder? Binder { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public StreamingContext Context { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public ISurrogateSelector? SurrogateSelector { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public object Deserialize(Stream serializationStream) => throw new NotImplementedException();
+        public void Serialize(Stream serializationStream, object graph) { }
+    }
+#pragma warning restore SYSLIB0050
+#pragma warning restore SYSLIB0011
 }
