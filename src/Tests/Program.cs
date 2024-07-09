@@ -288,11 +288,7 @@ Configurations configurations;
         Console.WriteLine($"An embeddable python has been downloaded to {directory.FullName}");
 
         foreach (var pth in directory.EnumerateFiles("*._pth"))
-        {
-            var contents = File.ReadAllText(pth.FullName);
-            contents = contents.Replace("#import site", "import site");
-            File.WriteAllText(pth.FullName, contents);
-        }
+            pth.Delete();
 
         var python = new EmbeddablePython(directory);
         for (int i = 0; i < 5; i++)
