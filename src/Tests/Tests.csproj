@@ -17,9 +17,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Update="python-3.12.2-embed-amd64.zip">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
 		<None Update="wav1.flac">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
