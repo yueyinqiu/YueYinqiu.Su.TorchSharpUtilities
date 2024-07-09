@@ -1,4 +1,5 @@
-﻿using NAudio.Wave;
+﻿using CsvHelper;
+using NAudio.Wave;
 using Python.Runtime;
 using System.Diagnostics;
 using System.IO.Compression;
@@ -280,11 +281,18 @@ Configurations configurations;
         var path = Directory.CreateDirectory(configurations.OutputPath).CreatePathBuilder();
         var directory = path.Join("TEST 2'").AsDirectory().Deleted();
 
-        using var pythonZipStream = File.OpenRead(configurations.PythonPath);
-        using var zip = new ZipArchive(pythonZipStream);
-        zip.ExtractToDirectory(directory.FullName);
+        using HttpClient client = new HttpClient();
+        using var stream = await client.GetStreamAsync(
+            "https://www.python.org/ftp/python/3.12.4/python-3.12.4-embed-amd64.zip");
+        ZipFile.ExtractToDirectory(stream, directory.FullName);
+        Console.WriteLine($"An embeddable python has been downloaded to {directory.FullName}");
+
         foreach (var pth in directory.EnumerateFiles("*._pth"))
-            pth.Delete();
+        {
+            var contents = File.ReadAllText(pth.FullName);
+            contents = contents.Replace("#import site", "import site");
+            File.WriteAllText(pth.FullName, contents);
+        }
 
         var python = new EmbeddablePython(directory);
         for (int i = 0; i < 5; i++)
